@@ -12,7 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.camera.core.Preview;
 import androidx.camera.core.SurfaceRequest;
+import androidx.camera.core.resolutionselector.AspectRatioStrategy;
 import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.PreviewHostApi;
 import io.flutter.view.TextureRegistry;
@@ -45,11 +47,11 @@ public class PreviewHostApiImpl implements PreviewHostApi {
     if (rotation != null) {
       previewBuilder.setTargetRotation(rotation.intValue());
     }
-    if (resolutionSelectorId != null) {
-      ResolutionSelector resolutionSelector =
-          Objects.requireNonNull(instanceManager.getInstance(resolutionSelectorId));
-      previewBuilder.setResolutionSelector(resolutionSelector);
-    }
+    ResolutionSelector resolutionSelector =
+      new ResolutionSelector.Builder()
+        .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+        .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+        .build();
 
     Preview preview = previewBuilder.build();
     instanceManager.addDartCreatedInstance(preview, identifier);

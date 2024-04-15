@@ -10,7 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.resolutionselector.AspectRatioStrategy;
 import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ImageCaptureHostApi;
 import java.io.File;
@@ -66,11 +68,11 @@ public class ImageCaptureHostApiImpl implements ImageCaptureHostApi {
       // This sets the requested flash mode, but may fail silently.
       imageCaptureBuilder.setFlashMode(flashMode.intValue());
     }
-    if (resolutionSelectorId != null) {
-      ResolutionSelector resolutionSelector =
-          Objects.requireNonNull(instanceManager.getInstance(resolutionSelectorId));
-      imageCaptureBuilder.setResolutionSelector(resolutionSelector);
-    }
+    ResolutionSelector resolutionSelector = new ResolutionSelector.Builder()
+      .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+      .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+      .build();
+
 
     ImageCapture imageCapture = imageCaptureBuilder.build();
     instanceManager.addDartCreatedInstance(imageCapture, identifier);
